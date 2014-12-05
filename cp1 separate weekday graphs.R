@@ -1,4 +1,3 @@
-## Unzip and read data
 unzip("activity.zip")
 activity<-read.csv("activity.csv",stringsAsFactors=T)
 
@@ -6,7 +5,7 @@ activity<-read.csv("activity.csv",stringsAsFactors=T)
 aggTotSteps<-aggregate(steps~date,data=activity,sum)
 
 ## produce histogram
-hist(aggTotSteps$steps,main="Total Steps Taken Each Day",xlab="Total Steps")
+hist(aggTotSteps$steps,main="Total Steps Each Day",xlab="Total Steps")
 
 ## calculate mean and median of total steps (aggTotSteps)
 meanSteps<-mean(aggTotSteps$steps)
@@ -22,7 +21,7 @@ aggAvgSteps<-aggregate(steps~interval,data=activity,mean)
 
 ## plot aggregate step data
 plot(aggAvgSteps$interval,aggAvgSteps$steps,type="l",
-     main="Steps Per 5-minute Interval, Averaged Across All Days",
+     main="Steps By 5-minute Interval, Averaged Across All Days",
      xlab="5-minute Time Interval Number",ylab="Average Steps")
 
 maxInterval<-aggAvgSteps[aggAvgSteps$steps==max(aggAvgSteps$steps),]
@@ -38,15 +37,12 @@ activityDate<-activity
 
 ## correct the activity data by replacing NA values with the mean for the interval
 activityInt[!complete.cases(activityInt),1]<-
-     aggAvgSteps[match(activityInt[!complete.cases(activityInt),3],
-                       aggAvgSteps$interval),2]
+     aggAvgSteps[match(activityInt[!complete.cases(activityInt),3],aggAvgSteps$interval),2]
      
 aggTotCorrectedIntSteps<-aggregate(steps~date,data=activityInt,sum)
-hist(aggTotCorrectedIntSteps$steps,
-     main="Total Steps Each Day (NAs replaced with mean interval value)",xlab="Total Steps")
+hist(aggTotCorrectedIntSteps$steps,main="Total Steps Each Day (NAs replaced with mean interval value)",xlab="Total Steps")
 
-## calculate mean and median of total steps corrected by 
-## interval mean (aggTotCorrectedIntSteps)
+## calculate mean and median of total steps corrected by interval mean (aggTotCorrectedIntSteps)
 meanCorrectedIntSteps<-mean(aggTotCorrectedIntSteps$steps)
 medianCorrectedIntSteps<-median(aggTotCorrectedIntSteps$steps)
 
@@ -66,11 +62,9 @@ activityDate[!complete.cases(activityDate),1]<-
 
 aggTotCorrectedDateSteps<-aggregate(steps~date,data=activityDate,sum)
 hist(aggTotCorrectedDateSteps$steps,
-     main="Total Steps Each Day (NAs replaced with mean date values)",
-     xlab="Total Steps")
+     main="Total Steps Each Day (NAs replaced with mean date values)",xlab="Total Steps")
 
-## calculate mean and median of total steps corrected by 
-## date mean (aggTotCorrectedDateSteps)
+## calculate mean and median of total steps corrected by date mean (aggTotCorrectedDateSteps)
 meanCorrectedDateSteps<-mean(aggTotCorrectedDateSteps$steps)
 medianCorrectedDateSteps<-median(aggTotCorrectedDateSteps$steps)
 
@@ -82,9 +76,7 @@ print(paste("Median total steps per day (corrected with mean date value): ",
 ## change date variable type from "chr" to "date"
 activity$date<-as.Date(activity$date,"%Y-%m-%d")
 ## Add column with factors of weekday or weekend
-activity$wday<-
-     as.factor(ifelse(weekdays(activity$date) %in% 
-                           c("Saturday","Sunday"), "Weekend", "Weekday"))
+activity$wday<-as.factor(ifelse(weekdays(activity$date) %in% c("Saturday","Sunday"), "Weekend", "Weekday"))
 
 ## aggregate mean of steps for all weekdays for each interval
 aggAvgWdaySteps<-aggregate(steps~interval,
@@ -97,10 +89,14 @@ aggAvgWendSteps$Dtype<-"Weekend"
 
 aggAvgAllDaysSteps<-rbind(aggAvgWdaySteps,aggAvgWendSteps)
 
-
 library(ggplot2)
 
-## Create separate plots for weekday and weekend step totals
+## plot aggregate step data
+#plot(aggAvgWdaySteps$interval,aggAvgWdaySteps$steps,type="l")
+
+#aggAvgAllDaysSteps<-aggregate(steps~interval,
+#                              data=activity,mean)
+
 g<-ggplot(aggAvgAllDaysSteps,aes(x=interval,y=steps))
 print(g
       +geom_line(col="blue") 
@@ -111,5 +107,10 @@ print(g
       +theme(panel.background = element_rect(fill = 'white'))
       )
 
-## Remove data file
+
+## aggregate mean of steps for all weekend days for each interval
+## plot aggregate step data
+#plot(aggAvgWendSteps$interval,aggAvgWendSteps$steps,type="l")
+
+
 unlink("activity.csv")
