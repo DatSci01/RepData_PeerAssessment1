@@ -26,6 +26,7 @@ plot(aggAvgSteps$interval,aggAvgSteps$steps,type="l",
      main="Steps Per 5-minute Interval, Averaged Across All Days",
      xlab="Time Interval (5-minute intervals, 24-hour clock",ylab="Average Steps",
      xaxt="n")
+#     axis(1,at=timeTicks,labels=formatC(timeTicks,width=4,format="d",flag="0"))
 axis(1,at=timeTicks,labels=c("00:00","05:00","10:00","15:00","20:00"))
 
 maxInterval<-aggAvgSteps[aggAvgSteps$steps==max(aggAvgSteps$steps),]
@@ -112,12 +113,11 @@ print(g
       +theme(strip.background = element_rect(color="black",fill="#FFCC99"),
              strip.text.x = element_text(face="bold"))
       +theme(panel.background = element_rect(fill = 'white'))
+#      +scale_x_continuous(breaks=timeTicks,
+#                          labels=formatC(timeTicks,width=4,format="d",flag="0"))
       +scale_x_continuous(limits=c(0,2355),breaks=c(0,500,1000,1500,2000),
                           labels=c("00:00","05:00","10:00","15:00","20:00"))
-#      +ggtitle(expression(paste('Baltimore ', PM[2.5], ' Emissions Trend By Source Type')))
-       +ggtitle(expression(paste('Avg Steps per Day over 24-hour Interval: Weekday vs Weekend')))
-
-)
+      )
 
 ## Remove data file
 unlink("activity.csv")
