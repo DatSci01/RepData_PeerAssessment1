@@ -19,7 +19,6 @@ print(paste("Median total steps per day: ",medianSteps))
 ## aggregate mean of steps for all dates for each interval
 aggAvgSteps<-aggregate(steps~interval,data=activity,mean)
 
-
 ## plot aggregate step data
 timeTicks<-seq(from=0,to=2000, by=500)
 plot(aggAvgSteps$interval,aggAvgSteps$steps,type="l",
@@ -36,18 +35,15 @@ print(paste("Averaged across all days, interval ",maxInterval$interval,
 valNA<-nrow(activity[!complete.cases(activity),])
 print(paste("There are ",valNA," observations with missing values"))
 
-aggSDSteps<-aggregate(steps~interval,data=activity,sd)
+activityInt<-activity
+activityDate<-activity
 
-set.seed(1234)
 ## correct the activity data by replacing NA values with the mean for the interval
-activity[!complete.cases(activity),1]<-
-     rnorm(1,
-     aggAvgSteps[match(activity[!complete.cases(activity),3],
-                       aggAvgSteps$interval),2],
-     aggSDSteps[match(activity[!complete.cases(activity),3],
-                       aggSDSteps$interval),2])
+activityInt[!complete.cases(activityInt),1]<-
+     aggAvgSteps[match(activityInt[!complete.cases(activityInt),3],
+                       aggAvgSteps$interval),2]
      
-aggTotCorrectedIntSteps<-aggregate(steps~date,data=activity,sum)
+aggTotCorrectedIntSteps<-aggregate(steps~date,data=activityInt,sum)
 hist(aggTotCorrectedIntSteps$steps,
      main="Total Steps Each Day (NAs replaced with mean interval value)",xlab="Total Steps")
 
@@ -61,20 +57,44 @@ print(paste("Mean total steps per day (corrected with mean interval value): ",
 print(paste("Median total steps per day (corrected with mean interval value): ",
             round(medianCorrectedIntSteps,4)))
 
+## aggregate mean steps by date for all intervals
+aggMeanSteps<-aggregate(steps~date,data=activity,mean)
+
+
+## correct the activity data by replacing NA values with the mean for the date
+activityDate[!complete.cases(activityDate),1]<-
+     aggMeanSteps[match(activityDate[!complete.cases(activityDate),2],
+                        aggMeanSteps$interval),1]
+
+aggTotCorrectedDateSteps<-aggregate(steps~date,data=activityDate,sum)
+hist(aggTotCorrectedDateSteps$steps,
+     main="Total Steps Each Day (NAs replaced with mean date values)",
+     xlab="Total Steps")
+
+## calculate mean and median of total steps corrected by 
+## date mean (aggTotCorrectedDateSteps)
+meanCorrectedDateSteps<-mean(aggTotCorrectedDateSteps$steps)
+medianCorrectedDateSteps<-median(aggTotCorrectedDateSteps$steps)
+
+print(paste("Mean total steps per day (corrected with mean date value): ",
+            round(meanCorrectedDateSteps,4)))
+print(paste("Median total steps per day (corrected with mean date value): ",
+            round(medianCorrectedDateSteps,4)))
+
 ## change date variable type from "chr" to "date"
-activity$date<-as.Date(activity$date,"%Y-%m-%d")
+activityInt$date<-as.Date(activityInt$date,"%Y-%m-%d")
 ## Add column with factors of weekday or weekend
-activity$wday<-
-     as.factor(ifelse(weekdays(activity$date) %in% 
+activityInt$wday<-
+     as.factor(ifelse(weekdays(activityInt$date) %in% 
                            c("Saturday","Sunday"), "Weekend", "Weekday"))
 
 ## aggregate mean of steps for all weekdays for each interval
 aggAvgWdaySteps<-aggregate(steps~interval,
-                           data=activity[activity$wday=="Weekday",],mean)
+                           data=activityInt[activityInt$wday=="Weekday",],mean)
 aggAvgWdaySteps$Dtype<-"Weekday"
 
 aggAvgWendSteps<-aggregate(steps~interval,
-                           data=activity[activity$wday=="Weekend",],mean)
+                           data=activityInt[activityInt$wday=="Weekend",],mean)
 aggAvgWendSteps$Dtype<-"Weekend"
 
 aggAvgAllDaysSteps<-rbind(aggAvgWdaySteps,aggAvgWendSteps)
