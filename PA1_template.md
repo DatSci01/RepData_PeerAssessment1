@@ -11,7 +11,7 @@ output:
 
 ## Loading and preprocessing the data
 
-The data zipfile is available in the GitHub directory. The following code unzips the data file and reads the resulting .csv file to produce the the "activity" data object.
+The data zipfile is available in the GitHub directory. The following code unzips the data file and reads the resulting .csv file to produce the "activity" data object.
 
 
 ```r
@@ -72,7 +72,7 @@ valNA<-nrow(activity[!complete.cases(activity),])
 ```
 There are **2304** observations (rows) with missing values in the dataset.
 
-Exploring the portion of the data file with NA values, it is apparent that all the NA values are for 8 complete days where no step data is available. As a result, the two strategies suggested in the readme file were not good solutions. The first strategy, replacing specific time interval NA values with the mean value of the same time interval across the reported days, essentially doesn't change anything (other than add more data to the calulations), because it simply adds days with the mean value for each interval. This results in the same overall mean as the data with NA values, and the median changes only slightly. The other strategy suggested, to replace NA values with the mean of the date, also accomplished nothing, since entire days had NA values and the day's mean to be used was therefore NA.  
+Exploring the portion of the data file with NA values, it is apparent that all the NA values are for 8 complete days where no step data is available. As a result, the two strategies suggested in the readme file were not good solutions. The first strategy, replacing specific time interval NA values with the mean value of the same time interval across the reported days, essentially doesn't change anything (other than add more data to the calulations), because it simply adds days with the mean value for each interval. This results in the same overall mean as the data with NA values, and the median changes only slightly. The other strategy suggested, to replace NA values with the mean of the values for the same date, also accomplished nothing, since entire days had NA values and thus the day's mean to be used would be NA as well.  
 
 The strategy I adopted for this project was to replace missing interval values with a random value calulated using the mean and standard deviation of the available values for that specific interval, using a specified seed (so the results can be duplicated). The following histogram shows the data with NAs replaced using this strategy.
 
@@ -108,7 +108,7 @@ This correction strategy (for this specific example, using this seed) results in
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-Using the data corrected by replacing NAs with random interval values, the following plot (requires the ggplot2 library) shows the difference in activity patterns between weekdays and weekends. To generate this plot, an additional variable was first added to the corrected data file to identify which date observations were weekdays (Mon-Fri) or weekend days (Sat-Sun).
+Using the data corrected by replacing NAs with random interval values, the following plot (requires the *ggplot2* library) shows the difference in activity patterns between weekdays and weekends. To generate this plot, the date variable in the corrected data file was changed from *character* to *date* and an additional variable was added to identify which date observations were weekdays (Mon-Fri) or weekend days (Sat-Sun). This additional variable was made into a factor.
 
 ```r
 ## change date variable type from "chr" to "date" so weekdays() function can be used
