@@ -43,7 +43,7 @@ medianSteps<-median(aggTotSteps$steps)
 The mean of the total steps taken per day is **10766.19**, while the median is **10765**.
 
 ## What is the average daily activity pattern?
-The following plot of the daily 5-minute intervals measured shows the average number of steps taken in each interval, averaged across all days reported.
+The following plot of the daily 5-minute intervals measured shows the average number of steps taken in each interval, averaged across all days reported. This plot required some data manipulation to take the non-linear time intervals of the data as supplied and change it to display correctly on a linear axis.
 
 
 ```r
@@ -110,7 +110,7 @@ This correction strategy (for this specific example, using this seed) results in
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-Using the data corrected by replacing NAs with random interval values, the following plot (requires the *ggplot2* library) shows the difference in activity patterns between weekdays and weekends. To generate this plot, the date variable in the corrected data file was changed from *character* to *date* and an additional variable was added to identify which date observations were weekdays (Mon-Fri) or weekend days (Sat-Sun). This additional variable was made into a factor.
+Using the data corrected by replacing NAs with random interval values, the following plot (requires the *ggplot2* library) shows the difference in activity patterns between weekdays and weekends. To generate this plot, the date variable in the corrected data file was changed from *character* to *date* and an additional variable was added to identify which date observations were weekdays (Mon-Fri) or weekend days (Sat-Sun). This additional variable was made into a factor. As in the second plot (above), this plot also required some data manipulation to display the non-linear time data (as supplied) correctly on a linear time axis. 
 
 ```r
 ## change date variable type from "chr" to "date"

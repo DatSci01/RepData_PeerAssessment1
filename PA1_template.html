@@ -236,7 +236,7 @@ medianSteps&lt;-median(aggTotSteps$steps)
 
 <h2>What is the average daily activity pattern?</h2>
 
-<p>The following plot of the daily 5-minute intervals measured shows the average number of steps taken in each interval, averaged across all days reported.</p>
+<p>The following plot of the daily 5-minute intervals measured shows the average number of steps taken in each interval, averaged across all days reported. This plot required some data manipulation to take the non-linear time intervals of the data as supplied and change it to display correctly on a linear axis.</p>
 
 <pre><code class="r">## aggregate mean of steps for all dates for each interval
 aggAvgSteps&lt;-aggregate(steps~interval,data=activity,mean)
@@ -299,7 +299,7 @@ medianCorrectedIntSteps&lt;-median(aggTotCorrectedIntSteps$steps)
 
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
 
-<p>Using the data corrected by replacing NAs with random interval values, the following plot (requires the <em>ggplot2</em> library) shows the difference in activity patterns between weekdays and weekends. To generate this plot, the date variable in the corrected data file was changed from <em>character</em> to <em>date</em> and an additional variable was added to identify which date observations were weekdays (Mon-Fri) or weekend days (Sat-Sun). This additional variable was made into a factor.</p>
+<p>Using the data corrected by replacing NAs with random interval values, the following plot (requires the <em>ggplot2</em> library) shows the difference in activity patterns between weekdays and weekends. To generate this plot, the date variable in the corrected data file was changed from <em>character</em> to <em>date</em> and an additional variable was added to identify which date observations were weekdays (Mon-Fri) or weekend days (Sat-Sun). This additional variable was made into a factor. As in the second plot (above), this plot also required some data manipulation to display the non-linear time data (as supplied) correctly on a linear time axis. </p>
 
 <pre><code class="r">## change date variable type from &quot;chr&quot; to &quot;date&quot;
 activity$date&lt;-as.Date(activity$date,&quot;%Y-%m-%d&quot;)
