@@ -15,6 +15,7 @@ The data zipfile is available in the GitHub directory. The following code unzips
 
 ```{r}
 options(scipen=2,digits=2)
+opts_chunk$set(fig.width=10)
 unzip("activity.zip")
 activity<-read.csv("activity.csv",stringsAsFactors=T)
 ```
@@ -42,11 +43,12 @@ The following plot of the daily 5-minute intervals measured shows the average nu
 aggAvgSteps<-aggregate(steps~interval,data=activity,mean)
 ## produce line plot with custom x scale to better represent the intervals
 timeTicks<-seq(from=0,to=2000, by=500)
-plot(aggAvgSteps$interval,aggAvgSteps$steps,type="l",
+plot(c(0:287),aggAvgSteps$steps,type="l",
      main="Steps Per 5-minute Interval, Averaged Across All Days",
      xlab="Time Interval (5-minute intervals, 24-hour clock",ylab="Average Steps",
-     xaxt="n")
-axis(1,at=timeTicks,labels=c("00:00","05:00","10:00","15:00","20:00"))
+     xaxt="n"
+     )
+axis(1,at=c(0,59,119,179,239),labels=c("00:00","05:00","10:00","15:00","20:00"))
 ## use aggregated data to find max value
 maxInterval<-aggAvgSteps[aggAvgSteps$steps==max(aggAvgSteps$steps),]
 ```
@@ -91,9 +93,9 @@ This correction strategy (for this specific example, using this seed) results in
 
 Using the data corrected by replacing NAs with random interval values, the following plot (requires the *ggplot2* library) shows the difference in activity patterns between weekdays and weekends. To generate this plot, the date variable in the corrected data file was changed from *character* to *date* and an additional variable was added to identify which date observations were weekdays (Mon-Fri) or weekend days (Sat-Sun). This additional variable was made into a factor.
 ```{r}
-## change date variable type from "chr" to "date" so weekdays() function can be used
+## change date variable type from "chr" to "date"
 activity$date<-as.Date(activity$date,"%Y-%m-%d")
-## Add variable with factors of weekday or weekend
+## Add column with factors of weekday or weekend
 activity$wday<-
      as.factor(ifelse(weekdays(activity$date) %in% 
                            c("Saturday","Sunday"), "Weekend", "Weekday"))
@@ -102,18 +104,26 @@ activity$wday<-
 aggAvgWdaySteps<-aggregate(steps~interval,
                            data=activity[activity$wday=="Weekday",],mean)
 aggAvgWdaySteps$Dtype<-"Weekday"
-## aggregate mean of steps for all weekend days for each interval
+
 aggAvgWendSteps<-aggregate(steps~interval,
                            data=activity[activity$wday=="Weekend",],mean)
 aggAvgWendSteps$Dtype<-"Weekend"
-## combine two aggregate files into a single data file
+
 aggAvgAllDaysSteps<-rbind(aggAvgWdaySteps,aggAvgWendSteps)
+
+## Add a column with a linear time index to be used in place of non-linear
+## intervals in the 'interval' variable so the data will display correctly
+## with respect to the time axis
+aggAvgAllDaysSteps$timeIndex<-
+     (aggAvgAllDaysSteps$interval/100-
+          floor(aggAvgAllDaysSteps$interval/100))*100/5+
+          floor(aggAvgAllDaysSteps$interval/100)*12
 
 
 library(ggplot2)
 
 ## Create separate plots for weekday and weekend step totals
-g<-ggplot(aggAvgAllDaysSteps,aes(x=interval,y=steps))
+g<-ggplot(aggAvgAllDaysSteps,aes(x=timeIndex,y=steps))
 print(g
       +geom_line(col="blue") 
       + facet_wrap(~Dtype,ncol=1)
@@ -121,14 +131,14 @@ print(g
       +theme(strip.background = element_rect(color="black",fill="#FFCC99"),
              strip.text.x = element_text(face="bold"))
       +theme(panel.background = element_rect(fill = 'white'))
-      +scale_x_continuous(limits=c(0,2355),breaks=c(0,500,1000,1500,2000),
-                          labels=c("00:00","05:00","10:00","15:00","20:00"))
+      +scale_x_continuous(limits=c(0,287),breaks=c(0,59,119,179,239),
+               labels=c("00:00","05:00","10:00","15:00","20:00"))
        +ggtitle(expression(paste('Avg Steps per Day over 24-hour Interval: Weekday vs Weekend')))
 
 )
 ```
 
-**The plot suggests a weekday step pattern concentrated in the morning hours, while weekend activity tends to be spread more evenly, morning thru early evening.**
+**The plot suggests a weekday step pattern concentrated in the morning hours, while weekend activity tends to be spread more evenly, morning thru early evening, and starts slightly later in the morning, indicating people may sleep in on weekends (no surprise there!).**
 
 
 

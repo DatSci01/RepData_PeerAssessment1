@@ -18,7 +18,9 @@ print(paste("Median total steps per day: ",medianSteps))
 
 ## aggregate mean of steps for all dates for each interval
 aggAvgSteps<-aggregate(steps~interval,data=activity,mean)
-## produce line plot with custom x scale to better represent the intervals
+
+
+## plot aggregate step data
 timeTicks<-seq(from=0,to=2000, by=500)
 plot(c(0:287),aggAvgSteps$steps,type="l",
      main="Steps Per 5-minute Interval, Averaged Across All Days",
@@ -26,7 +28,7 @@ plot(c(0:287),aggAvgSteps$steps,type="l",
      xaxt="n"
      )
 axis(1,at=c(0,59,119,179,239),labels=c("00:00","05:00","10:00","15:00","20:00"))
-## use aggregated data to find max value
+
 maxInterval<-aggAvgSteps[aggAvgSteps$steps==max(aggAvgSteps$steps),]
 print(paste("Averaged across all days, interval ",maxInterval$interval,
             " contains the max number of steps (",
@@ -78,9 +80,6 @@ aggAvgWendSteps$Dtype<-"Weekend"
 
 aggAvgAllDaysSteps<-rbind(aggAvgWdaySteps,aggAvgWendSteps)
 
-## Add a column with a linear time index to be used in place of non-linear
-## intervals in the 'interval' variable so the data will display correctly
-## with respect to the time axis
 aggAvgAllDaysSteps$timeIndex<-
      (aggAvgAllDaysSteps$interval/100-
           floor(aggAvgAllDaysSteps$interval/100))*100/5+
@@ -98,7 +97,8 @@ print(g
       +theme(strip.background = element_rect(color="black",fill="#FFCC99"),
              strip.text.x = element_text(face="bold"))
       +theme(panel.background = element_rect(fill = 'white'))
-      +scale_x_continuous(limits=c(0,287),breaks=c(0,59,119,179,239),
+      +scale_x_continuous(limits=c(0,287),breaks=c(0,500,1000,1500,2000),
+#      +scale_x_continuous(limits=c(0,2355),breaks=c(0,59,119,179,239),
                labels=c("00:00","05:00","10:00","15:00","20:00"))
        +ggtitle(expression(paste('Avg Steps per Day over 24-hour Interval: Weekday vs Weekend')))
 
